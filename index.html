@@ -4,8 +4,8 @@ layout: default
 
 <div class="page clearfix" index>
     <div class="left">
-        <h1>Welcome to HyG's Blog!</h1>
-        <small>这里记录着我的前端学习之路</small>
+        <h1>Welcome to Jason Zhou's Blog!</h1>
+        <small>这里记录着我的Coding学习之路</small>
         <hr>
         <ul>
             {% for post in paginator.posts %}
@@ -91,7 +91,7 @@ layout: default
                     <li>
                         <a href="{{ root_url }}/{{ site.category_dir }}#{{ category | first }}" class="categories-list-item" cate="{{ category | first }}">
                             <span class="name">
-                                {{ category | first }}
+                                {{ category  | first}}
                             </span>
                             <span class="badge">{{ category | last | size }}</span>
                         </a>

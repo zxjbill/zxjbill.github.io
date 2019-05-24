@@ -7,28 +7,28 @@
 
 # Site settings
 title: 周新杰的Coding之路
-brief-intro: Front-end Dev Engineer
+brief-intro: 业余开发
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://zxjbill.github.io" # the base hostname & protocol for your site
 
 permalink: /:year/:month/:day/:title/
 
 # other links
-twitter_username: gaohaoyang126
+twitter_username: zxjbill
 facebook_username: zxjbill
 github_username:  zxjbill
 email: zxjbill@126.com
-weibo_username: 3115521wh
+weibo_username: 周新杰
 zhihu_username: zxjbill
 linkedIn_username: 周新杰
 dribbble_username:
 
-description_footer: 本站记录我前端之旅的沿途风景！
+description_footer: Coding Blog of Jason Zhou!
 
 # comments
 # two ways to comment, only choose one, and use your own short name
 # 两种评论插件，选一个就好了，使用自己的 short_name
-duoshuo_shortname: #hygblog
+duoshuo_shortname: #zxjblog
 disqus_shortname: zxjbill
 
 # statistic analysis 统计代码
