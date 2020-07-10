@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  "2020年夏——七月小记"
-date:   2020-07-10 21:14:00
-categories: jekyll
+date:   2020-07-10 08:00:00
+categories: 小记
 tags: Blog 
 ---
 
