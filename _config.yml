@@ -6,7 +6,7 @@
 # 'jekyll serve'. If you change this file, please restart the server process.
 
 # Site settings
-title: 周新杰的Coding之路
+title: Jason Zhou的Coding之路
 brief-intro: 业余开发
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://zxjbill.github.io" # the base hostname & protocol for your site
