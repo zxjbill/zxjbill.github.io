@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "OpenGL学习笔记一"
+title:  "OpenGL学习笔记一 安装配置"
 date:   2020-07-11 06:00:00
 categories: OpenGL
 tags: OpenGL, C++
@@ -40,7 +40,7 @@ glBindObject(GL_WINDOW_TARGET, 0);
    * VS选择生成版本选择为x64；
    * 指定包含目录~/include，指定库目录~/lib，指定链接附加依赖项glfw.lib。
    * 包含了opengl32.lib库
-   * 可以些包含库 #inlcude <GLFW/...>
+   * 可以些包含库 #inlcude <glfw3.h>
 * GLAD
    * OpenGL的函数使用需要retrieve the location of the functions and store them in function pointers for later use.
    * [下载GLAD](https://glad.dav1d.de/)，包括两个文件夹一个.c文件；
