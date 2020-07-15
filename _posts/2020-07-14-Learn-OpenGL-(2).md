@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "OpenGL学习笔记二 Hello Window和Hello Triangle"
-date:   2020-07-13 06:00:00
+date:   2020-07-14 06:00:00
 categories: OpenGL
 tags: OpenGL, C++
 ---
