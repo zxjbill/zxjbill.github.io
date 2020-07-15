@@ -3,7 +3,7 @@ layout: post
 title:  "计算机网络学习笔记一 概述"
 date:   2020-07-14 06:00:00
 categories: 计算机网络
-tags: 计算机网络, C++
+tags: 计算机网络
 mathjax: true
 mermaid: true
 ---
