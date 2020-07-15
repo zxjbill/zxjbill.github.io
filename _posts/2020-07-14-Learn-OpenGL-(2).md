@@ -9,7 +9,10 @@ tags: OpenGL, C++
 * content
 {:toc}
 
-LearnOpenGL的4和5节。
+LearnOpenGL的4和5节。主要是生成窗口，和在窗口中绘制三角形和矩形。使用到Vertex Shader和Fragment Shader，Shader program，缓冲对象，数组对象等。
+
+
+
 
 ## Hello Window
 

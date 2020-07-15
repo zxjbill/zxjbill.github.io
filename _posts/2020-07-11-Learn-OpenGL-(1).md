@@ -11,6 +11,11 @@ tags: OpenGL, C++
 
 学习材料主要是[Learn OpenGL](https://github.com/JoeyDeVries/LearnOpenGL).
 
+本篇主要介绍OpenGL的相关基础，GLFW和GLAD的安装和配置。
+
+
+
+
 ## OpenGL相关基础
 * OpenGL是由[khronos](https://www.khronos.org)维护的相关规范，不是API。
 * Core-profile模式和Immediate mode， 现代OpenGL推荐使用core-profile模式。两者主要区别是前者会更了解OpenGL实际是如何操作的, 而后者可能更容易学习，教程里主要是Core-profile模式。3.3版本以后支持core-profile模式。
