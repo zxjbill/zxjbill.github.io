@@ -22,6 +22,11 @@
         offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
       });
     </script>
+
+
+    {% if page.mermaid %}
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.0/dist/mermaid.min.js"></script>
+    {% endif %}
     <!-- <script src="{{ " /js/scroll.min.js " | prepend: site.baseurl }}" charset="utf-8"></script> -->
   </body>
 

@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ "/css/main.css " | prepend: site.baseurl }}">
     <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
     <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml " | prepend: site.baseurl | prepend: site.url }}">
+    <link rel="dns-prefetch" href="//cdn.bootcss.com" />
 
 {% if site.baidu_tongji_id %}
     <script>
@@ -42,15 +43,25 @@
 
 {% if page.mathjax %}
 <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-    tex2jax: { inlineMath: [["$","$"],["\\(","\\)"]] },
+var mathId = document.getElementById("post-container");//选择公式识别范围
+MathJax.Hub.Config({
+    showProcessingMessages: false,//关闭js加载过程信息
+    messageStyle: "none",//不显示信息
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath:  [ ["$", "$"] ],//行内公式选择符
+        displayMath: [ ["$$","$$"] ],//段内公式选择符
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],//避开某些标签
+        ignoreClass:"comment-content" //避开含该Class的标签
+    },
     "HTML-CSS": {
-      linebreaks: { automatic: true, width: "container" }
+        availableFonts: ["STIX","TeX"],//可选字体
+        showMathMenu: false //关闭右击菜单显示
     }
 });
+MathJax.Hub.Queue(["Typeset",MathJax.Hub,mathId]);//选择公式识别范围
 </script>
-<script type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" id=""></script>
 {% endif %}
 </head>
