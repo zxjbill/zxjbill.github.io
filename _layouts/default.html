@@ -27,6 +27,21 @@
     {% if page.mermaid %}
     <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.0/dist/mermaid.min.js"></script>
     {% endif %}
+
+    <!-- table 代表表属性 th 可能代表表头 -->
+    <style>
+      table {
+      margin: auto;
+      border: 1px solid black;
+      text-align: right;
+      }
+
+      table tr th {
+      text-align: left;
+      padding: 6px 13px;
+      color: white;
+      }
+    </style>
     <!-- <script src="{{ " /js/scroll.min.js " | prepend: site.baseurl }}" charset="utf-8"></script> -->
   </body>
 
