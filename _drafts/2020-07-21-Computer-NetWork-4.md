@@ -49,3 +49,14 @@ mermaid: false
 * 硬件地址(物理地址)是数据链路层和物理层使用的地址。
 * IP地址是网络层和以上各层使用的地址，是逻辑地址(IP地址是用软件实现的)。
 * IP地址在IP数据报的首部，而硬件地址在MAC帧的首部。
+* IP地址与硬件地址关系图:
+
+<figure align="center">
+  <img src="/media/image/LayersofDataFlow.png" width="579" height="279" />
+</figure>
+
+### 地址解析协议 ARP
+* 地址解析协议ARP解决IP地址与本地主机或路由器MAC地址间的对应关系。
+* 解决方案：ARP高速缓存，存储局域网的IP和MAC地址,TTL(Time To Live)有效映射时间表。
+* 同一局域网下，A向B通讯，则查ARP高速缓存，有则直接生成MAC帧;无则广播ARP请求分组，目标机B则向A单播告诉其MAC地址。
+* 主要解决异构网络MAC地址不一样，复杂MAC地址的分级、分组路由算法等不好实现的问题。可通过IP编址利用计算机软件自动实现ARP的过程，主机用户(及应用层和运输层)不知道地址解析过程。
