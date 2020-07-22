@@ -34,7 +34,7 @@ mermaid: false
 * IP地址的编址方式有三个历史阶段：分类的IP地址，子网的划分，构成超网。
 * 分类的IP地址如图所示
 <figure align="center">
-  <img src="/media/image/IPcomposition.png" width="544" height="384" />
+  <img src="/media/image/IPComposition.png" width="544" height="384" />
 </figure>
 * IP地址中一般不使用的特殊IP地址
 
