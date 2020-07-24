@@ -109,15 +109,15 @@ mermaid: false
 * <font color="red">Go-back-N</font>:表示退回重传已发送过的N个分组(即使N个分组中的后几个分组正确传送了)。因此当通信线路质量不好时，连续ARQ协议带来负面影响。
 
 ## TCP报文段的首部格式
-* TCP报文首部：20个字节的固定首部和4n个根据需要增加的选项($\in N$)。具体如图所示：
+* TCP报文首部：20个字节的固定首部和4n个根据需要增加的选项($n \in N$)。具体如图所示：
 
 <figure align="center">
-  <img src = "/media/image/TCPComposition.png" width="551" height="320" />
+  <img src = "/media/image/ComputerNetWork/TCPComposition.png" style="width:80%" />
 </figure>
 
 * <span style="color:red;">端口字段</span>：总共4字节，运输层与应用层的服务接口，运输层的复用和分用功能通过端口得以实现。
-* <span style="color:red;">序号字段</span>：4字节，指本报问所发第一个字节的在数据流中的序号。32位长度表示。
-* <span style="color:red;">确认号字段</span>：4字节，期望对方下一个报文段的数据第一个字节的序号。(这是根据己方之前正确接收数据的最大序号+1，4个字节则有4GB的数据，所以一般重复利用时，老序号数据早已到达终点)
+* <span style="color:red;">序号字段seq</span>：4字节，指本报文所发第一个字节的在数据流中的序号。32位长度表示。
+* <span style="color:red;">确认号字段ack</span>：4字节，期望对方下一个报文段的数据第一个字节的序号。(这是根据己方之前正确接收数据的最大序号+1，4个字节则有4GB的数据，所以一般重复利用时，老序号数据早已到达终点)
 * 数据偏移字段：1个字节，指出TCP报文段中，TCP首部长度(TCP数据部分开头相对于TCP报文段开头的偏移量)。1个字节所以也会影响到选项长度。
 * <span style="color:red;">窗口字段</span>：2字节，让对方设置发送窗口的依据。(往往根据己方接受窗口大小/数据缓存空间有关)
 * <span style="color:red;">检验和字段</span>：2字节，检验和字段检验范围包括首部和数据两部分。计算是应该添加TCP报文段的前面12字节的伪首部(与UDP相似，但第四个字段协议号是TCP协议号6，第五个字段是TCP长度)。使用IPv6时相应的伪首部也要变化。
@@ -148,3 +148,91 @@ mermaid: false
 * 未按序号接受的正确数据，是否可确认：可以，解决方案：<font color = "red">选择确认SACK</font> Selective ACK。
 * 在TCP首部中选项部分，指明SACK选项(1字节)和SACK选项长度(1字节), 每段以确定数据的(上下边界, 8字节)，所以最多能指明4个已确认的为按序号字节快。
 * RFC 2018要求在<span style="color:red;">建立TCP连接</span>时，应该在首部选项中加上“允许SACK”选项，事先商量好。
+
+## TCP的流量控制
+### 利用滑动窗口实现流量控制
+* 流量控制flow control：让发送放的发送速率不要太快，既要让接收方来得及接受，同时也不要使网络发生拥塞。
+* 滑动窗口控制流量的情况：接受方可通知发送发的ACK位置，并告知可对方可设置的滑动窗口大小。
+* 持续计时器：解决互相等待死锁
+  * * <span style = "color:red">互相等待死锁</span>：接收方通知了发送方零窗口报文段。当接收方重新获得储存空间，增加发送方发送窗口，但这个报文段在传输过程丢失，出现发送方和接收方都持续等待的局面。
+  * TCP连接的一方接收到对方<span style="color:blue">零窗口</span>通知后，启动<span style="color:red">持续计时器</span>。计时器时间到，发送<span style="color:red">零窗口探测报文</span>(仅1个字节)，当窗口不是0时则打破死锁僵局。
+
+### 必须考虑传输效率
+* TCP报文段发送机制：
+  * <span style="color:red">MSS机制</span>：TCP维持一个变量，它等于最大报文段长度MSS, Maximum Segment Size时再组装成一个TCP报文发送。MSS值时再建立TCP连接时通知号对方的(TCP首部选项)。
+  * <span style="color:red">推送机制</span>：发送方的应用进程明确要求发送报文段(要求该TCP连接支持推送操作)。
+  * <span style="color:red">计时器机制</span>：计时器时间到则把当前已有缓冲装入报文段发送。
+* 发送方短数据问题：发送方每次发送非常小的数据量(1个字节)，接收方收到则给与40字节确认报文。导致TCP，IP首部占整个收发数据报的绝大部分。
+  * <span style="color:red">Nagle算法</span>：如果发送应用进程把要发送的数据逐个字节送到TCP缓存，发送方先发送第一个数据字节，后面缓存，等待收到确认后再把缓冲数据一起发送。后续<span style="color:blue">只有在接收到前一个报文段的确认后才继续发送下一个报文段</span>。另外规定，当数据到<span style="color:red">达发送窗口大小的一半</span>或<span style="color:red">已达到报文段的最大长度</span>则立即发送。
+* 糊涂窗口综合征：接收方应用进程每次仅读取1个字节，导致接收方窗口大小为1字节，则邀请发送方发送一个字节数据，于是接收方窗口又满了。如此循环往复。
+  * 解决方案：仅有两种情况接收方发出确认报文，并通知发送方窗口大小：
+  * 接收缓存足够容纳最长的报文段；
+  * 接受缓存已有一半空闲空间。
+
+## TCP的拥塞控制
+### 拥塞控制的一般原理
+* 拥塞：$\sum 资源需求 > 可用资源$
+* 往往单纯增加资源(例如增加缓存)不能很好的解决拥塞。所以需要拥塞控制：防止过多数据注入到网络中，使路由器或链路不致过载。
+* 拥塞控制于流量控制的区别与相似：
+  * 拥塞控制：全局性过程，涉及到所有主机、路由器和降低网络传输性能的所有因素。
+  * 流量控制：点到点的流量控制，是一个端到端问题。要做的是抑制发送方发送数据的速率使得接收方来得及接受。
+  * 相似点：某些拥塞算法需要对发送端发送控制报文，告诉发送端放慢发送速率。
+* 开环控制：在设计网络时，实现考虑拥塞影响因素，力求工作时不拥塞。
+* 闭环控制：基于反馈环路的概念：
+  * 监测网络，检测拥塞发生时间、地点；
+  * 将拥塞信息发送给采取行动的地方；
+  * 调整网络运行以解决问题。
+* 监测网络拥塞的指标：<span style="color:red">缺少缓存而丢弃的分组百分数，平均队列长度，超时重传的分组数，平均分组时延，分组时延的标准差等</span>。上诉指标上升，则拥塞增长。
+
+### 拥塞控制方法
+* 基于窗口的方法-拥塞窗口CWND
+  * TCP发送方维持拥塞窗口CWND，Congestion Window：取决于网络拥塞程度动态变化，利用拥塞窗口调整发送数据量。单位是<span style="color:red">报文段数目，这里仅是示例，不一定真实情况</span>。
+  * $真正的发送窗口 = Min(公告窗口值,拥塞窗口值)$ 
+  * 基本原则：没用拥塞增大窗口，出现拥塞或可能拥塞，减小窗口。
+  * 如何判断拥塞：重传定时器：出现超时则可猜想网络出现拥塞(传输错误概率很小)；接受三个相同的ACK(预示<span style="color:red">可能</span>发生拥塞)。
+* 控制拥塞的四种算法(实际时配合使用的)：
+  * 慢开始：cwnd从1开始增加，经过一个传输轮次(cwnd数目的报文段收到了确认)，cwnd翻倍。慢开始门限ssthresh：cwnd数目超过门限值后，进入拥塞避免算法。
+  * 拥塞避免：cwnd窗口每个传输伦茨，按照线性增加。
+  * 快重传：超时重传则减小慢开始门限值ssthresh(<span style = "color:red">乘法减小</span>：减小为当前cwnd的一半)，并cwnd设置为1，重新慢开始算法。
+  * 快恢复：收到三个重复确认(接收方收到失序报文，立即发送重复确认)，<span style = "color:red">立即重传</span>确认位置之后的报文段(<span style = "color:red">不必等待该报文段重传计时</span>)。同时ssthresh乘法减小，cwnd设置为减小后的ssthresh，进入拥塞避免算法。
+
+<figure align="center">
+  <img src = "/media/image/ComputerNetWork/CongestionControlAlgo.png" style="width:80%" />
+</figure>
+
+* 随机早期检测RED：不免全局同步，随机早期检测RED, Random Early Detecion (Random Early Drop)。<span style="color:blue">加权平均队列长度</span>，<span style="color:blue">超过最小门限，小于最大门限</span>时，按照<span style="color:blue">一定概率计算方式</span>将新到达的分组丢弃。丢弃概率与加权平均队列长度和新到达分组已进入队列数目有关。
+
+
+## TCP的运输连接管理
+* TCP运输连接三阶段：<span style="color:red">连接建立, 数据传送, 连接释放</span>
+* 运输连接的管理：就是使得运输连接的建立和释放都能正常进行。
+* TCP连接建立过程解决三个问题：
+  * 双方知道对方存在；
+  * 能够协商一些参数(最大窗口值，是否使用窗口扩大选项，时间戳选项、以及服务质量等)。
+  * 能够对运输实体资源(缓存大小，连接表中的项目等)进行分配。
+* 客户-服务器方式：发起连接的应用进程叫<span style="color:red">客户</span>，等待连接建立的应用进程叫<span style="color:red">服务器</span>。
+
+### TCP的连接建立
+* TCP建立连接的过程叫做<span style="color:red">握手</span>。
+* 客户和服务器之间交换三个TCP报文，称之为<span style="color:red">三报文握手</span>。具体流程如下图：
+<figure align="center">
+  <img src = "/media/image/ComputerNetWork/TCPEstablish.png" style="width:80%" />
+</figure>
+
+* 注意：
+  * 第一次报文，客户端进程发送数据报<span style="color:red">不带数据但消耗一个序号</span>。进入<span style="color:blue">SYN-SENT</span>状态。
+  * 第二次报文，服务器端进程发发送数据报<span style="color:red">不带数据但消耗一个序号</span>。进入<span style="color:blue">SYN-RCVD</span>状态。
+  * 第三次报文，客户端进程<span style="color:red">可携带数据</span>，携带则消耗序号，不携带则不消耗。客户端进入<span style="color:blue">ESTABLISHED</span>状态，服务器端接收到第三次握手数据报时，也进入ESTABLISHED状态。
+  * 第三次报文是为了防止已失效的连接请求报文突然又传到产生错误。
+
+### TCP连接释放
+* TCP连接释放过程：四报文握手。
+* 客户和服务器之间进行四个报文交换完成四报文握手。具体流程如下图所示:
+<figure align="center">
+  <img src = "/media/image/ComputerNetWork/TCPRelease.png" style="width:80%" />
+</figure>
+
+* 注意:
+  * 发送连接释放报文段(无论是主动方,还是被动方), 不携带数据,FIN= 1, 并消耗一个序号.
+  * 主动关闭方完成前两次握手后, 任然要接受数据, 处于半关闭状态.
+  * 主动方发出最后一次确认后, 开启时间等待(TIME-WAIT)状态, 时间等待计时器计时,等待2MSL最长报文段寿命(Maximum Segment Lifetime).作用: 1. 保证被动关闭方接受到最后关闭确认退出LAST-ACK状态. 2. 保证网络中本次连接的所有报文段从网络中小时.
