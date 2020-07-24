@@ -35,7 +35,7 @@ mermaid: false
 * IP地址的编址方式有三个历史阶段：分类的IP地址，子网的划分，构成超网(无分类)。
 * 分类的IP地址如图所示
 <figure align="center">
-  <img src="/media/image/ComputerNetwork/IPComposition.png" width="544" height="384" />
+  <img src="/media/image/ComputerNetwork/IPComposition.png" style="width:80%" />
 </figure>
 * IP地址中不做一般使用的特殊IP地址
 
@@ -56,7 +56,7 @@ mermaid: false
 * IP地址与硬件地址关系图:
 
 <figure align="center">
-  <img src="/media/image/ComputerNetwork/LayersofDataFlow.png" width="579" height="279" />
+  <img src="/media/image/ComputerNetwork/LayersofDataFlow.png" style="width:80%" />
 </figure>
 
 ### 地址解析协议 ARP
@@ -71,7 +71,7 @@ mermaid: false
 * 可选部分用于排错、测量及安全等措施，长度1-40字节。由于增加开销，一般使用。
 
 <figure align="center">
-  <img src="/media/image/ComputerNetwork/IPv4DataGram.png" width="516" height="244" />
+  <img src="/media/image/ComputerNetwork/IPv4DataGram.png" style="width:80%" />
 </figure>
 
 ### IP层转发分组的流程
@@ -112,7 +112,7 @@ mermaid: false
 * 分为ICMP差错报告报文和ICMP询问报文。
 * ICMP报文中的IP数据报报文部分(前面还有IP数据报首部)前四个字节固定格式：类型、代码和校验和。接着四个字节的内容与ICMP的类型有关，最后是数据字段也和类型有关。
 <figure align="center">
-  <img src="/media/image/ComputerNetwork/ICMPComposition.png" width="449" height="252" />
+  <img src="/media/image/ComputerNetwork/ICMPComposition.png" style="width:80%" />
 </figure>
 
 ### ICMP报文的种类  
@@ -120,7 +120,7 @@ mermaid: false
 * ICMP差错报告报文分为五种：终点不可达，源点抑制，时间超过(TTL为0和预定时间内不能收到一个数据报的全部报文片), 参数问题，改变路由(重定向)。 
 * 差错报告报文结构如图所示：
 <figure align="center">
-  <img src="/media/image/ComputerNetwork/ICMPErrorReportComposition.png" width="414" height="220" />
+  <img src="/media/image/ComputerNetwork/ICMPErrorReportComposition.png" style="width:80%" />
 </figure>
 * 特殊情况不发送ICMP差错报告报文：ICMP差错报告报文的数据报，分片数据报的后续报片不发送，多播数据报，有特殊地址的数据报(127.0.0.0或0.0.0.0)
 
@@ -185,7 +185,7 @@ mermaid: false
 * IPv6数据报由两部分组成：基本首部(40字节)和有效载荷(有效载荷包含0个或多个扩展首部和数据部分，总长不超过64KB)。
 
 <figure align="center">
-  <img src="/media/image/ComputerNetwork/IPv6DataGram.png" width="378" height="300" />
+  <img src="/media/image/ComputerNetwork/IPv6DataGram.png" style="width:80%" />
 </figure>
 
 * 各个字段作用举例：有效载荷长度：占16位，指明除基本首部外的字节数目。下一个部首：有扩展首部类型则指明下一个扩展首部类型，没有则指明高层协议(例如TCP或UDP等)。
