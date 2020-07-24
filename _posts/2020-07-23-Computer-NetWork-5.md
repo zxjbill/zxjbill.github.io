@@ -112,7 +112,7 @@ mermaid: false
 * TCP报文首部：20个字节的固定首部和4n个根据需要增加的选项($n \in N$)。具体如图所示：
 
 <figure align="center">
-  <img src = "/media/image/ComputerNetWork/TCPComposition.png" style="width:80%" />
+  <img src = "/media/image/ComputerNetwork/TCPComposition.png" style="width:80%" />
 </figure>
 
 * <span style="color:red;">端口字段</span>：总共4字节，运输层与应用层的服务接口，运输层的复用和分用功能通过端口得以实现。
@@ -197,7 +197,7 @@ mermaid: false
   * 快恢复：收到三个重复确认(接收方收到失序报文，立即发送重复确认)，<span style = "color:red">立即重传</span>确认位置之后的报文段(<span style = "color:red">不必等待该报文段重传计时</span>)。同时ssthresh乘法减小，cwnd设置为减小后的ssthresh，进入拥塞避免算法。
 
 <figure align="center">
-  <img src = "/media/image/ComputerNetWork/CongestionControlAlgo.png" style="width:80%" />
+  <img src = "/media/image/ComputerNetwork/CongestionControlAlgo.png" style="width:80%" />
 </figure>
 
 * 随机早期检测RED：不免全局同步，随机早期检测RED, Random Early Detecion (Random Early Drop)。<span style="color:blue">加权平均队列长度</span>，<span style="color:blue">超过最小门限，小于最大门限</span>时，按照<span style="color:blue">一定概率计算方式</span>将新到达的分组丢弃。丢弃概率与加权平均队列长度和新到达分组已进入队列数目有关。
@@ -216,7 +216,7 @@ mermaid: false
 * TCP建立连接的过程叫做<span style="color:red">握手</span>。
 * 客户和服务器之间交换三个TCP报文，称之为<span style="color:red">三报文握手</span>。具体流程如下图：
 <figure align="center">
-  <img src = "/media/image/ComputerNetWork/TCPEstablish.png" style="width:80%" />
+  <img src = "/media/image/ComputerNetwork/TCPEstablish.png" style="width:80%" />
 </figure>
 
 * 注意：
@@ -229,7 +229,7 @@ mermaid: false
 * TCP连接释放过程：四报文握手。
 * 客户和服务器之间进行四个报文交换完成四报文握手。具体流程如下图所示:
 <figure align="center">
-  <img src = "/media/image/ComputerNetWork/TCPRelease.png" style="width:80%" />
+  <img src = "/media/image/ComputerNetwork/TCPRelease.png" style="width:80%" />
 </figure>
 
 * 注意:
