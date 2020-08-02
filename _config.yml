@@ -7,7 +7,7 @@
 
 # Site settings
 title: Jason Zhou的Coding之路
-brief-intro: 业余开发
+brief-intro: 凡是过往皆为序章
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://zxjbill.github.io" # the base hostname & protocol for your site
 

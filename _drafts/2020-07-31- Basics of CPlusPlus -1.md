@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "C/C++ 基础总结"
-date:   2020-07-24 06:00:00
+date:   2020-08-01 06:00:00
 categories: C/C++
 tags: C/C++ 语言基础
 mathjax: true
@@ -66,3 +66,123 @@ public:
 #### extern
 * extern修饰变量和函数，扩大其作用域，使其可以在其他源文件和头文件使用。
 * extern"C"让编译器把代码当成C语言代码处理。
+
+#### 结构体名称可以和函数相同不冲突
+```cpp
+typedef struct Student {
+    int age;
+} S;            // "S"和"Student"两个标识符名称空间不一样，"Student"在struct标识符这个空间内可找到
+
+int Student()           // 正确，定义后 "Student" 只代表此函数
+{
+
+}
+
+//void S() {}          // 错误，符号 "S" 已经被定义为一个 "struct Student" 的别名
+
+int main() {
+    Student();
+    struct Student me;  // 或者 "S me", 用"Student"则struct是必须的，用以区分函数Student;
+    return 0;
+}
+```
+
+#### 全局匿名union
+```cpp
+#include <iostream>
+static union {
+    int i;
+    double d;
+};              // 类似这里不加变量名，声明了一个全局的匿名union。如果加了则不是匿名的。
+
+int main()
+{
+    ::i = 20;           // 全局匿名union。
+    std::cout << ::i << endl;
+
+    static union
+    {
+        int i;
+        double d;
+    };                  // 不加变量名
+
+    i = 30;             // 局部匿名union;
+    std::cout << i << endl;
+}
+```
+
+#### 用C语言实现C++ 类
+主要是实现C++面对对象的特性：封装，继承，多态
+* 封装：利用函数指针把属性和方法封装到结构体内部
+* 继承：结构体嵌套
+* 多态：父类和子类的函数指针不同。
+
+<span style="color:red">TODO 有坑待填！！！！！！！！！！！！！！！！！</span>
+
+#### explicit 关键字
+* 修饰构造函数，防止隐式转换和复制初始化
+* 修饰转换函数，防止隐式转换，但按语境转换可以(显示转化，if也显示转化为bool, 基本变量类型初始化函数int a())。
+
+```cpp
+struct A
+{
+	A(int) { }
+	operator bool() const { return true; }
+};
+
+struct B
+{
+	explicit B(int) {}
+	// explicit operator bool() const { return true; }
+	explicit operator int() const { return 1; }
+};
+
+struct C
+{
+	C(int b) {}
+};
+
+void doA(A a) {}
+
+void doB(B b) {}
+
+void funcNeedInt(int i) {}
+
+int main()
+{
+	A a1(1);// OK：直接初始化
+	A a2 = 1;// OK：复制初始化
+	A a3{ 1 };// OK：直接列表初始化
+	A a4 = { 1 };// OK：复制列表初始化
+	A a5 = (A)1;// OK：允许 static_cast 的显式转换
+	doA(1);// OK：允许从 int 到 A 的隐式转换
+	if (a1);// OK：使用转换函数 A::operator bool() 的从 A 到 bool 的隐式转换
+	bool a6（a1）;// OK：使用转换函数 A::operator bool() 的从 A 到 bool 的隐式转换
+	bool a7 = a1;// OK：使用转换函数 A::operator bool() 的从 A 到 bool 的隐式转换
+	bool a8 = static_cast<bool>(a1);  // OK ：static_cast 进行直接初始化
+
+	B b1(1);// OK：直接初始化
+	// B b2 = 1;// 错误：被 explicit 修饰构造函数的对象不可以复制初始化
+	B b3{ 1 };// OK：直接列表初始化
+	// B b4 = { 1 };// 错误：被 explicit 修饰构造函数的对象不可以复制列表初始化
+	B b5 = (B)1;// OK：允许 static_cast 的显式转换
+	// doB(1);// 错误：被 explicit 修饰构造函数的对象不可以从 int 到 B 的隐式转换
+	// if (b1);// 错误，被 explicit修饰函数 B::operator int()的对象不可以隐式转化到bool，涉及到Int到bool的隐式转化。
+				// 如果是 B::operator bool() 是可以按语境转化的。
+	funcNeedInt(int(b1));	// 正确，显示转换
+	// funcNeedInt(b1); // 错误：被 explicit 修饰转换函数 B::operator int() 的对象不可以隐式转换
+	// bool bo(b1); // 错误，被 explicit修饰函数 B::operator int()的对象不可以隐式转化到bool，涉及到Int到bool的隐式转化。
+	int b6(b1);// OK：被 explicit 修饰转换函数 B::operator int() 的对象可以从 B 到 int 的按语境转换
+	// C cc(b1); // 错误，被 explicit修饰函数 B::operator int()的对象不可以隐式转化到int
+	// int b7 = b1;// 错误：被 explicit 修饰转换函数 B::operator int() 的对象不可以隐式转换
+	int b8 = static_cast<int>(b1);  // OK：static_cast 进行直接初始化
+
+	return 0;
+}
+```
+
+#### friend友元类和友元函数
+* 能访问私有成员
+* 破坏封装性
+* 不可传递，单向性
+* 友元声明的形式和数量不受限制
