@@ -32,7 +32,9 @@ mermaid: false
   * 挂起状态：在上述三种状态中，增加挂起状态，使得程序出现活动阻塞，禁止阻塞，活动就绪，禁止就绪。主要导致挂起的原因：终端用户请求，父进程请求，负荷调节需要，操作系统需要。
   * 创建和终止状态：创建：创建PCB，并把进程转入就绪状态插入队列(在未获得必须资源未进入队列时则时创建状态)。终止：等待操作系统善后，PCB清零空间回收(处在终止状态的进程的信息仍然可被收集)。
 
-<span style="color:red">添加一张不同进程状态转换图！！！！！！！！！！！！！！</span>
+<figure align="center">
+  <img src = "/media/image/Operating Systems/ProcessStateChanged.png" style="width:70%" />
+</figure>
 
 ### 进程控制块
 * 进程控制块：为描述和控制进程定义的一个<span style="color:red">数据结构</span>，进程实体的一部分，记录操作系统所需的、用于描述当前进程情况以及控制进程运行的<span style="color:red">全部信息</span>。使在多道程序环境下不能运行的程序称为一个可独立运行地与其他进程并发执行的<span style="color:red">基本单位</span>。PCB是进程的<span style="color:red">唯一标志</span>，OS通过PCB来对并发执行的进程进行管理。PCB经常改写，所以<span style="color:red">常驻内存</span>。
@@ -45,6 +47,7 @@ mermaid: false
 
 ## 进程控制
 * 进程控制是进程管理的最基本的功能，主要负责进程状态转换。采用<span style="color:red">原语/原子操作</span>，原语<span style="color:red">不可分割，常驻内存</span>。
+
 ### 进程的创建
 * 进程图：描述进程的父子关系。父指向子的有向树。
 * 引起创建的原因：用户登录，作业调度，提供服务和应用请求。
@@ -53,6 +56,7 @@ mermaid: false
   * 为新进程分配资源
   * 初始化PCB：初始化标识信息，初始化处理器状态，初始化处理器控制信息。
   * 进入就绪队列
+
 ### 进程终止：
 * 引起终止的原因：正常结束，异常结束，外界干预
 * 终止过程：
@@ -61,6 +65,7 @@ mermaid: false
   * 终止子进程
   * 终止拥有的全部资源，归还资源
   * 队列移出。
+  
 ### 进程阻塞与唤醒
 * 引起阻塞的原因：请求系统服务，启动了某种操作，新数据尚未到达，无新工作可做。(等待被请求，提出请求，请求执行，三种情况都可能被阻塞，或者是无事可做)
 * 通过阻塞原语Block阻塞：停止执行，修改现行状态，插入PCB阻塞队列，切换处理器状态(保存现有处理器状态到PCB，从新进程PCB调入处理器状态)。进程阻塞是<span style="color:red">进程自身的一种行为</span>。(<span style="color:red">没有回收资源</span>)
@@ -71,29 +76,100 @@ mermaid: false
 * 激活过程；内存有足够空间，则从外存调入内存，改变现行经常状态。
 
 ## 进程同步
-* 进程同步：在多程序并发执行过程中，协调进程执行次序，保证资源有效正确的使用和各进程的相互合作，从而使得程序的执行具有可再现性。
+进程同步：在多程序并发执行过程中，协调进程执行次序，保证资源有效正确的使用和各进程的相互合作，从而使得程序的执行具有可再现性。
+
 ### 进程同步的基本概念
 * 两种制约关系：间接制约(公用临界资源)，直接制约(直接的输入输出关系，常利用缓冲区)。
 * 临界资源：不允许不同进程同时访问，互斥的。
 * 临界区：访问临界资源的那段代码。常在临界区前后这只进入区和退出区来处理临界资源互斥问题。
 * 同步机制的规则：空闲让进，忙则等待，有限等待，让权等待。
+
 ### 信号量机制
 * 信号量机制建立在<span style="color:red">原子操作</span>基础上的，wait(S)提出申请使用临界资源和signal(S)释放临界资源。
 * 整形信号量：用一个整型量记录临界资源使用情况。
 * 记录型信号量：满足让权等待，有列表记录需求使用临界区的进程。
 * AND型信号量：在记录型信号量基础上，考虑多种临界资源同时需要的情况，则采用&&运算判断每种资源均有，才能操作。
 * 信号量集：资源管理上可一次分配和释放多个资源。
+
 ### 信号量的应用
 * 使用了信号量实现进程互斥:wait(mutex)和signal(mutex)成对出现，保证资源使用互斥和资源能被正常释放。
 * 利用信号量实现前趋关系：在优先进程在执行完后进行 signal(mutex)，而后续进程则在执行前 wait(mutex)。可实现大量复杂的前趋关系。
+
 ### 管程机制
 为避免大量的同步操作分散在各个进程种，而产生的新进程同步工具<span style="color:red">管程</span>。
 * 管程定义：由代表共享资源的数据结构，及对该共享数据结构进行实际操作的一组过程组成的资源管理程序两者共同组成的<span style="color:red">资源管理模块</span>。
 
 ## 经典进程的同步问题
-* 生成者-消费者问题，哲学家进餐问题，读者-写者问题
+此次仅记录一些经典的解法。
 
-<span style="color:red">补一下不同问题的解答过程!!!!!!!!!!!!!!!!!</span>
+### 生成者-消费者问题
+* AND信号量解决方案。满足生产者和消费者均要用`mutex`考察对方是否进行操作，也要考察缓冲区情况`empty`和`full`。
+```cpp
+Var mutex，empty，full: semaphore:=1，n，0;
+    buffer:array[0，…，n-1] of item;
+    in out: integer:=0，0;
+  begin
+    parbegin
+      producer: begin
+                repeat
+                produce an item in nextp;
+                Swait(empty，mutex);
+                buffer(in):=nextp;
+                in:=(in+1)mod n;
+                Ssignal(mutex，full);
+              until false;
+      end
+      consumer:begin
+                repeat
+                Swait(full，mutex);
+                Nextc:=buffer(out);
+                Out:=(out+1) mod n;
+                Ssignal(mutex，empty);
+                consumer the item in nextc;
+              until false;
+      end
+    parend
+  end
+```
+
+### 哲学家进程问题
+* AND信号量解决方案。防止均拿起一只筷子的死锁。
+```cpp
+Var chopsiick array of semaphore:=(1,1,1,1,1);
+  process i
+    repeat
+      think;
+      Sswait(chopstick[(i + 1)mod5], chopstick[i]); // 等待左右两根筷子均可使用，否则一个都不占用
+      eat;
+      Ssignat(chopstick[(i + 1)mod5], chopstick[i]);
+    until false;
+```
+
+### 读者-写者问题
+* 利用信号量集机制解决方案。读者人数不超过RN, 写者至多1个，读写不共存。
+```cpp
+Var RN integer;
+L, mx:semaphore:=N,1;
+  begin
+    parbegin
+      reader:begin
+            repeat
+              Swait(L, 1, 1);   // 等待L至少有一个，使用一个
+              Swait(mx, 1, 0);  // 等待mutex至少有一个， 使用0个
+              perform read operation;
+              Ssignal(L, 1);    // 释放1个L，并通知
+            until false;
+      end
+      writer:begin
+            repeat
+              Swait(mx, 1, 1; L, RN, 0);
+              perform write operation;
+              Ssignal(mu, 1);
+            until false;
+      end
+    parend
+  end
+```
 
 ## 进程通信
 低级通信：通信的信息量少，且需要用户实现数据结构设置，数据传送、进程的互斥与同步等。
@@ -131,16 +207,18 @@ mermaid: false
 * 用户级线程(User Level Threads)：存在于用户空间，线程的创建、撤销和线程之间的同步与通信等功能都无须OS调用来实现。同一进程的线程调度也无需内核参与。线程控制块也设置在用户空间。因此内核完全不知道用户级线程的存在。因此用户及线程的系统的调度以<span style="color:red">进程</span>为单位进行的。
   * 优点：
     1. 切换线程不需要使用内核空间。
-    2. 调度算法是进程专用的。
+    2. 调度算法是进程专用的。线程的管理和调度可以由进程自己决定。
     3. 用户级线程的实现与操作系统平台无关。所以用户级线程可以在不支持线程机制的操作系统平台上实现。
   * 缺点：
-    1. 系统调用的阻塞问题。一个线程阻塞则全部线程都阻塞。
+    1. 系统调用的阻塞问题。一个线程阻塞则该进程的全部线程都阻塞。
     2. 单纯用户级线程中，多线程应用不能利用多处理器进行多重处理的优点。
 * 组合方式：把ULT和KST方式进行组合。
 
 ### 线程的实现
+
 #### 内核支持线程的实现
 * 内核在创建进程PCB时，同时创建PTDA(Per Task Data Area)用于保存线程的TCB，创建新线程，在相应进程的PTDA创建新的TCB。线程的调度和切换与进程的调度和切换时分相似。
+
 #### 用户级线程的实现
 * 运行时系统：实质是用于创建、撤销、切换用户级线程和实现线程的同步和通信、调度的函数的集合。当线程需要系统调用或获得系统资源时，将<span style="color:red">需求传送给运行时系统</span>，由运行时系统来进行相应的系统调用和通过系统调用获得资源。
 * 内核控制线程：轻型进程LWP，每个进程拥有多个LWP，每个LWP有自己的数据结构(如TCB等)。当有用户级线程运行时，将其连接到LWP上，此时可获得<span style="color:red">内核支持的线程的所有属性</span>(包括系统调用)。可以构建“线程池”，多个用户级线程复用一个LWP(当用户级线程不需要与内核通信时，不需要LWP)。此时阻塞LWP不会阻塞用户级线程，只是用户级线程不能访问内核。
