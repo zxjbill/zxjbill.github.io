@@ -154,12 +154,12 @@ mermaid: false
 * 流量控制flow control：让发送放的发送速率不要太快，既要让接收方来得及接受，同时也不要使网络发生拥塞。
 * 滑动窗口控制流量的情况：接受方可通知发送发的ACK位置，并告知可对方可设置的滑动窗口大小。
 * 持续计时器：解决互相等待死锁
-  * * <span style = "color:red">互相等待死锁</span>：接收方通知了发送方零窗口报文段。当接收方重新获得储存空间，增加发送方发送窗口，但这个报文段在传输过程丢失，出现发送方和接收方都持续等待的局面。
+  * <span style = "color:red">互相等待死锁</span>：接收方通知了发送方零窗口报文段。当接收方重新获得储存空间，增加发送方发送窗口，但这个报文段在传输过程丢失，出现发送方和接收方都持续等待的局面。
   * TCP连接的一方接收到对方<span style="color:blue">零窗口</span>通知后，启动<span style="color:red">持续计时器</span>。计时器时间到，发送<span style="color:red">零窗口探测报文</span>(仅1个字节)，当窗口不是0时则打破死锁僵局。
 
 ### 必须考虑传输效率
 * TCP报文段发送机制：
-  * <span style="color:red">MSS机制</span>：TCP维持一个变量，它等于最大报文段长度MSS, Maximum Segment Size时再组装成一个TCP报文发送。MSS值时再建立TCP连接时通知号对方的(TCP首部选项)。
+  * <span style="color:red">MSS机制</span>：TCP维持一个变量，它等于最大报文段长度MSS, Maximum Segment Size时再组装成一个TCP报文发送。MSS值时在建立TCP连接时通知号对方的(TCP首部选项)。
   * <span style="color:red">推送机制</span>：发送方的应用进程明确要求发送报文段(要求该TCP连接支持推送操作)。
   * <span style="color:red">计时器机制</span>：计时器时间到则把当前已有缓冲装入报文段发送。
 * 发送方短数据问题：发送方每次发送非常小的数据量(1个字节)，接收方收到则给与40字节确认报文。导致TCP，IP首部占整个收发数据报的绝大部分。
@@ -192,7 +192,7 @@ mermaid: false
   * 如何判断拥塞：重传定时器：出现超时则可猜想网络出现拥塞(传输错误概率很小)；接受三个相同的ACK(预示<span style="color:red">可能</span>发生拥塞)。
 * 控制拥塞的四种算法(实际时配合使用的)：
   * 慢开始：cwnd从1开始增加，经过一个传输轮次(cwnd数目的报文段收到了确认)，cwnd翻倍。慢开始门限ssthresh：cwnd数目超过门限值后，进入拥塞避免算法。
-  * 拥塞避免：cwnd窗口每个传输伦茨，按照线性增加。
+  * 拥塞避免：cwnd窗口每个传输轮次，按照线性增加。
   * 快重传：超时重传则减小慢开始门限值ssthresh(<span style = "color:red">乘法减小</span>：减小为当前cwnd的一半)，并cwnd设置为1，重新慢开始算法。
   * 快恢复：收到三个重复确认(接收方收到失序报文，立即发送重复确认)，<span style = "color:red">立即重传</span>确认位置之后的报文段(<span style = "color:red">不必等待该报文段重传计时</span>)。同时ssthresh乘法减小，cwnd设置为减小后的ssthresh，进入拥塞避免算法。
 
