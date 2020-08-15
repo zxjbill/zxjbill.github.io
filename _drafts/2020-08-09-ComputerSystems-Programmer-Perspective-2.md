@@ -127,3 +127,67 @@ setbe D		setna		D <- CF | ZF			低于或相等(无符号<=)
 
 * 跳转指令 `jmp` 和 `j-`。`jmp` 是无条件跳转，而 `j-` 是根据后缀跳转，跳转后最与访问条件指令类似。跳转目标分为三种对应举例：标号 `.L1`，寄存器 `*%rax`，内存地址 `*(rax)`。
 * 调转指令在汇编之后产生的地址往往是下一条指令的相对位置（即在下一跳指令之后加上 `j-` 在汇编中指定位置的值）
+
+```cpp
+long absdiff(long x, long y)
+{
+	long result;
+	if (x < y)
+		result = y - x;
+	else
+		result = x - y;
+	return result;
+}
+```
+
+条件控制实现分支，现代处理器会精密判断分支走向，概率较高时也能较好性能，预测错误会付出严重的时间成本
+
+```bash
+# long absdiff_se(long x, long y)
+# x in %rdi, y in %rdi
+absdiff:
+	cmpq	%rsi, %rdi
+	jge		.L2
+	movq	%rsi, %rax
+	subq	%rdi, %rax
+	ret
+.L2:
+	movq	%rdi, %rax
+	subq	%rsi, %rax
+	ret
+```
+
+条件传送实现，顺序执行，当两种计算足够简单时效率会更高。例如计算仅一个加法指令，GCC 会采用条件传送编译。
+```bash
+# long absdiff_se(long x, long y)
+# x in %rdi, y in %rdi
+absdiff:
+	movq	%rsi, %rax
+	subq	%rdi, %rax
+	movq	%rdi, %rdx
+	subq	%rsi, %rdx
+	cmpq	%rsi, %rdi
+	cmovge	%rdx, %rax			# 条件赋值，此次赋值条件是大于等于
+	ret
+```
+
+* 条件传送存可能存在在不合理性。举例如下：
+  
+```cpp
+long cread(long *xp)
+{
+	return (xp ? *xp : 0);
+}
+```
+
+不合理的汇编代码
+```bash
+# long cread(long *xp)
+# xp in register %rdi
+cread:
+	movq	(%rdi), %rax
+	testq	%rdi,	%rdi
+	movl	$0, %edx
+	cmove	%rdx, %rax
+	ret
+```
