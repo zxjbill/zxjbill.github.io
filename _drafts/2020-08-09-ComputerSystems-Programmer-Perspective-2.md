@@ -78,13 +78,28 @@ multstore:
 
 ## 控制
 * 条件码：单个位，都是标志最近操作的结果情况。CF 进位标志（标志最高位产生进位，可以用于检测无符号溢出），ZF 零标志，SF 符号标志（标志操作结果是否为负数），OF 溢出标志（检测正溢出和负溢出）。
-* 以 `t = a + b` 举例。
+* 举例：
 
 ```cpp
+addq Sre, Dest	t = a + b				// 加法计算
 CF (unsigned) t < (unsigned) a			// 无符号溢出
 ZF t == 0								// 零
 SF t < 0								// 负数
 OF (a < 0 == b < 0) && (t < 0 != a < 0)	// 有符号溢出
+```
+
+```bash
+cmpq Src2, Src1								# 类似计算了 Src1 - Src2, 但不设置值
+CF (unsigned) Src1 - Src2 < (unsigned) Src1	# 无符号溢出
+ZF Src1 == Src2								# 零
+SF Src1 - Src2 < 0							# 负数
+OF (Src1 < 0 == Src2 > 0) && (Src1 - Src2 > 0) || (Src1 >= 0 == Src2 < 0) && (Src1 - Src2 =< 0)	# 后面部需不需要取等号部分？待考证
+```
+
+```bash
+testq Src2, Src1					# 类似计算 Src1 & Src2，但不设置值
+ZF		Src1 & Src2 == 0
+SF		Src1 & Src2 < 0
 ```
 
 * leaq 不改变条件码（因为它计算的是地址）。
@@ -92,3 +107,23 @@ OF (a < 0 == b < 0) && (t < 0 != a < 0)	// 有符号溢出
 * 移位操作，进位设置为最后一个移出的位。溢出标志设置位 0。
 * `inc` 和 `dec` 会设置溢出和零标志，但是不改变进位标志。
 * 条件码设置指令，其不改变其他寄存器。
+* 访问条件码 `set-` ：后缀表示考虑的不同条件码组合，将目的位置设置为 0/1。 `n` 代表非，`e` 代表相等，`s` 代表负，`g` 大于，描述为 `(SF ^ OF) & ~ZF`，`ng` 大于等于，描述为
+
+```bash
+# 指令		同义名		设置条件				 效果
+sete D		setz		D <- ZF					相等/零
+setne D		setnz		D <- ~ZF				不等/非零
+sets D					D <- SF					负数
+setns D					D <- ~SF				非负数
+setg D		setnle		D <- ~(OF ^ SF) & ~ZF	大于(有符号>)
+setge D		setnl		D <- ~(OF ^ SF)			大于等于(有符号>=)
+setl D		setnge		D <- OF ^ SF			小于(有符号<)
+setle D		setng		D <- (OF ^ SF) | ZF		小于等于(有符号<=)
+seta D		setnbe		D <- ~CF & ~ZF			超过(无符号>)
+setae D		setnb		D <- ~CF				超过或相等(无符号>=)
+setb D		setnae		D <- CF					低于(无符号<)
+setbe D		setna		D <- CF | ZF			低于或相等(无符号<=)
+```
+
+* 跳转指令 `jmp` 和 `j-`。`jmp` 是无条件跳转，而 `j-` 是根据后缀跳转，跳转后最与访问条件指令类似。跳转目标分为三种对应举例：标号 `.L1`，寄存器 `*%rax`，内存地址 `*(rax)`。
+* 调转指令在汇编之后产生的地址往往是下一条指令的相对位置（即在下一跳指令之后加上 `j-` 在汇编中指定位置的值）
