@@ -4,6 +4,7 @@ title:  "建博第一文"
 date:   2019-06-01 23:26:00
 categories: jekyll
 tags: Blog 
+excerpt_separator: <!--more-->
 ---
 
 * content
