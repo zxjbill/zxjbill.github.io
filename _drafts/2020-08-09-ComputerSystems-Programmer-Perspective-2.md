@@ -191,3 +191,69 @@ cread:
 	cmove	%rdx, %rax
 	ret
 ```
+
+* 循环 `do-while` `while` `for`的实现。 
+
+`do-while` 汇编实现的类C表达
+```cpp
+loop:
+	body-statement
+	t = test-expr;
+	if (t)
+		goto loop;
+```
+
+`while` 汇编实现的类C表达
+```cpp
+// 往中间跳
+	goto test;
+loop:
+	body-statement
+test:
+	t = test-expr;
+	if (t)
+		goto loop;
+```
+
+```cpp
+// guarded-do 较高等级优化编译时，例如 -o1， GCC会采用这种策略.
+// 采用这种策略编译，编译器往往可以优化初始的测试。
+t = test-expr;
+if (!t)
+	goto done;
+loop:
+	body-statement
+	t = test-expr;
+	if (t)
+		goto loop;
+done:
+```
+
+`for` 汇编实现的类C表达
+```cpp
+init-expr;
+goto test;
+loop:
+	body-statement
+	update-expr;
+test:
+	t = test-expr;
+	if (t)
+		goto loop;
+```
+
+```cpp
+	init-expr;
+	t = test-expr;
+	if (!t)
+		goto done;
+loop:
+	body-statement
+	update-expr;
+	t = test-expr;
+	if (t)
+		goto loop;
+done: 
+```
+
+* 简单的 `for` 循环转化成 `while` 循环对含有 `continue` 的不适用。`continue` 会导致跳过 `update-expr`。
