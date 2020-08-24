@@ -6,12 +6,15 @@ categories: C/C++
 tags: C/C++ 语言基础
 mathjax: true
 mermaid: true
+excerpt_separator: <!--more-->
 ---
 
 * content
 {:toc}
 
 最近可能要参加不少笔试面试，找了些 C/C++语言基础方面的材料，打算过一遍，这里记录总结一些自己有些模糊的概念。
+
+<!--more-->
 
 #### const
 * 修饰变量，指针，引用：被修饰的目标不可被修改。类的 const 常量仅能在初始化了列表赋值。
