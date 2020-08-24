@@ -6,11 +6,14 @@ categories: 操作系统
 tags: 操作系统
 mathjax: true
 mermaid: false
+excerpt_separator: <!--more-->
 ---
 
 * content
 {:toc}
 文件管理功能主要是管理外存上的文件，文件存取，共享和保护等手段提供给用户。由于时间有限，这部分打算粗略的过一遍即可。
+
+<!--more-->
 
 ## 文件和文件系统
 ### 文件、记录和数据项

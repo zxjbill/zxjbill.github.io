@@ -6,11 +6,14 @@ categories: 操作系统
 tags: CS:APP 汇编
 mathjax: true
 mermaid: false
+excerpt_separator: <!--more-->
 ---
 
 * content
 {:toc}
 程序的机器级表示。和汇编相关的一些东西。
+
+<!--more-->
 
 ## 程序编码
 * gcc 生成编代码 `gcc -Og -S mstore.c`。注意 `-S` 和 `-s` 不一样，-s 没有 main 和内部具体函数实现会报错。
