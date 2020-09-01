@@ -261,3 +261,83 @@ const char *dlerror(void);
 ### PIC 数据引用
 * 内存任意位置加载目标模块，数据段和代码段距离总是保持不变的。
 * 全局偏移量表 Global Offset Table GOT：每个被这个目标模块引用的全局数据目标（过程或全局变量）都有一个 8 字节条目，编译器为 GOT 每个条目生成一个重定位记录。加载时，动态链接器会重定位 GOT 中每个条目，使得它包含目标的正确的绝对地址。每个引用全局目标的目标模块都有自己的 GOT。
+
+### PIC 函数调用
+* 延迟绑定：产生重定位记录，在程序第一次调用该过程时，通过动态链接器再绑定该过程的地址。
+* 延迟绑定通过 GOT 和过程连接表 Procedure Linkage Table PLT 来实现的。
+* 一个目标模块调用定义在共享库的任何函数，那么它就有自己的 GOT 和 PLT。GOT 是数据段的一部分，而 PLT 是代码段的一部分。
+* 通过类似程序实现第一次调用
+
+```bash
+# 全局偏移量表 GOT
+GOT[0]: addr of .dynamic
+GOT[1]: addr of reloc entries
+GOT[2]: addr of dynamic linker
+GOT[3]: 0x4005b6 # sys startup
+GOT[4]: 0x4005c6 # 在第一次调用后，链接器将此处数据改为对应函数的地址
+GOT[5]: 0x4005d6
+
+# 过程链接表 PLT
+4005a0:pushq *GOT[1]
+4005a6:jmpq *GOT[2]
+-----
+4005c0:jmpq *GOT[4]
+4005c6:pushq $0x1
+4005cb:jmpq 4005a0
+```
+
+## 库打桩机制
+* 打桩基本思想：给一个需要打桩的目标函数，创建一个<span style="color:red">包装函数</span>，原型与目标函数一样，使用某种特殊的打桩机制，欺骗系统调用包装函数而不是目标函数，包装函数会执行它自己的逻辑，再调用目标函数，再将目标函数的返回值，返回给调用者。
+* 打桩可发生在编译时、链接时或程序加载和执行时。
+
+### 编译时打桩
+* `-I.` 参数告诉 C 预处理器在搜索系统目录前，应该先搜索当前目录查找。而包装函数的文件使用目标函数来编译的。
+
+```bash
+gcc -DCOMPILETIME -c mymalloc.c
+gcc -I. -o intc int.c mymolloc.o # 注意是先生成好了 mymolloc.o 的
+
+./intc
+malloc(32)=0x9ee10
+free(0x9ee10)
+```
+// TODO 添加 cpp 代码
+
+### 链接时打桩
+* -Wl,option 把 option 传递给链接器，让链接器把对符号 option 的引用解析成 __wrap_option，把对符号 __real_option 的引用解析为 option。
+
+```bash
+gcc -DLINKTIME -c mymalloc.c
+gcc -c int.c
+gcc -Wl, --wrap,malloc -Wl, --wrap,free -o intl int.o mymalloc.o
+
+./intc
+malloc(32)=0x9ee10
+free(0x9ee10)
+```
+// TODO 添加 cpp 代码
+
+### 运行时打桩
+* 利用动态链接器的 LD_PRELOAD 环境变量,
+* 利用 dlsym 调用返回指向目标函数的指针。
+
+```bash
+gcc -DRUNTIME -shared -fpic -o mymalloc.so mymalloc.c -ldl
+gcc -o intr int.c
+
+# 在 bash shell 中运行程序
+LD_PRELOAD="./mymalloc.so" ./intr
+```
+
+## 处理目标文件的工具
+* GNU binutils 包很有帮助 // TODO 这些包都没有尝试过
+* AR: 创建静态库，插人、删除、列出和提取成员。
+* STRINGS: 列出一个目标文件中所有可打印的字符串。
+* STRIP: 从目标文件中删除符号表信息。
+* NM: 列出一个目标文件的符号表中定义的符号。
+* SIZE: 列出目标文件中节的名字和大小。
+* READELF: 显示一个目标文件的完整结构，包括ELF 头中编码的所有信息。包含 SIZE 和NM 的功能。
+* OBJDUMP: 所有二进制工具之母。能够显示一个目标文件中所有的信息。它最大的作用是反汇编.text 节中的二进制指令。
+
+Linux 系统为操作共享库还提供了LDD 程序：
+* LDD: 列出一个可执行文件在运行时所需要的共享库。
