@@ -301,21 +301,86 @@ gcc -I. -o intc int.c mymolloc.o # 注意是先生成好了 mymolloc.o 的
 malloc(32)=0x9ee10
 free(0x9ee10)
 ```
-// TODO 添加 cpp 代码
+
+c 文件如下
+
+```cpp
+// int.c
+#include<stdio.h>
+#include<malloc.h>
+
+int main()
+{
+  int *p = malloc(32);
+  free(p);
+  return(0);
+}
+```
+
+```cpp
+// 新建本地 malloc.h
+#define malloc(size) mymalloc(size)
+#define free(size) myfree(ptr)
+
+void *mymalloc(size_t size);
+void myfree(void *ptr);
+```
+
+```cpp
+// 新建包装函数 malloc.c
+#ifdef COMPILETIME
+#include <stdio.h>
+#include <malloc.h>
+
+void *mymalloc(size_t size){
+  void *ptr = malloc(size);
+  printf("malloc(%d)=%p\n",
+    int size, ptr);
+  return ptr;
+}
+
+void myfree(void *ptr){
+  free(ptr);
+  print("free(%p)\n", ptr);
+}
+#endif
+
+```
 
 ### 链接时打桩
-* -Wl,option 把 option 传递给链接器，让链接器把对符号 option 的引用解析成 __wrap_option，把对符号 __real_option 的引用解析为 option。
+* Linux 静态链接器支持 -Wl,option 把 option 传递给链接器，让链接器把对符号 option 的引用解析成 __wrap_option，把对符号 __real_option 的引用解析为 option。
 
 ```bash
 gcc -DLINKTIME -c mymalloc.c
 gcc -c int.c
-gcc -Wl, --wrap,malloc -Wl, --wrap,free -o intl int.o mymalloc.o
+gcc -Wl,--wrap,malloc -Wl,--wrap,free -o intl int.o mymalloc.o
 
 ./intc
 malloc(32)=0x9ee10
 free(0x9ee10)
 ```
-// TODO 添加 cpp 代码
+
+```cpp
+#ifdef LINKTIME
+#include <stdio.h>
+
+void *__real_malloc(size_t size);
+void __real_free(void *ptr);
+
+void *__wrap_malloc(size_t size){
+  void *ptr = __real_malloc(size);
+  printf("malloc(%d)=%p\n",
+    int size, ptr);
+  return ptr;
+}
+
+void __wrap_free(void *ptr){
+  __real_malloc(ptr);
+  print("free(%p)\n", ptr);
+}
+
+#endif
+```
 
 ### 运行时打桩
 * 利用动态链接器的 LD_PRELOAD 环境变量,
@@ -329,8 +394,49 @@ gcc -o intr int.c
 LD_PRELOAD="./mymalloc.so" ./intr
 ```
 
+```cpp
+#ifdef RUNTIME
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <dlfcn.h>
+
+void *malloc(size_t size){
+  void *(*mallocp)(size_t size);
+  char *error;
+
+  // 获得库内 malloc 函数的地址
+  mallocp = dlsym(RTLD_NEXT, "malloc");
+  if (error = dlerror() != NULL){
+    fputs(error, stderr);
+    exit(1);
+  }
+
+  char *ptr = mallocp(size);
+  printf("malloc(%d) = %p\n", (int) size, ptr);
+  return ptr;
+}
+
+void free(void *ptr){
+  void (*freep)(void* ptr);
+  char *error;
+
+  // 获得库内 free 函数地址
+  freep = dlsym(RTLD_NEXT, "free");
+  if (error = dlerror() != NULL){
+    fputs(error, stderr);
+    exit(1);
+  }
+
+  freep(ptr);
+  printf("free(%p)\n", ptr);
+}
+
+#endif
+```
+
 ## 处理目标文件的工具
-* GNU binutils 包很有帮助 // TODO 这些包都没有尝试过
+* GNU binutils 包很有帮助
 * AR: 创建静态库，插人、删除、列出和提取成员。
 * STRINGS: 列出一个目标文件中所有可打印的字符串。
 * STRIP: 从目标文件中删除符号表信息。
