@@ -49,3 +49,10 @@ int inet_pton(AF_INET, const *src, void *dst);
 // 成功则指向点分十进制字符串的指针，若出错则为NULL
 const char* inet_ntop(AF_INET, const void *src, char *dst, socklen_t size);
 ```
+* `nslookup` 查询域名系统 DNS 的应用，展示 IP 地址和域名的对应关系。
+* `localhost` 映射回送地址 loopback address 127.0.0.1。
+* 一个连接由两端的套接字地址唯一确定，这对套接字地址叫做套接字对。 `(cliaddr:cliport, servaddr:servport)`
+
+
+## 套接字接口
+* 套接字接口 socket interface 是一组函数，它和 Unix I/O 函数结合起来，创建网络应用。
