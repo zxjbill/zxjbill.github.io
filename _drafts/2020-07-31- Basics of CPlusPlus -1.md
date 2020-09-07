@@ -32,16 +32,18 @@ excerpt_separator: <!--more-->
 * 相当于把内联函数的内容写到了函数调用处，不用执行进入函数的步骤。
 * 编译器一般不内联循环、递归、switch 等复杂的内联函数。
 * 隐式内联：在声明处定义的函数，除了虚函数外都会自动成为内联函数。
-* 虚函数可以内联，但虚函数表现多态（因为运行时才知道具体调用函数）是不可以内联。
+* 虚函数可以内联，但虚函数表现多态（因为运行时才知道具体调用函数）是不可以内联。内联虚函数只有编译器知道调用的对象是哪个类的时候，只有编译器具有实际对象而不是对象的指针或引用时才会发生。
 
 #### volatile
 * 声明变量是可能被一些未知因素给改变，所以不能对该对象进行优化。(例如用寄存器的值替代内存的值等)。
 
 #### assert
 * 是宏，不是函数。可在 include 之前使用#define NDEBUG 来禁止使用 assert 断言。
+* 可以通过 `#define NDEBUG` 来关闭 assert。
 
 #### sizeof
 * 对数组是整个数组的空间大小，对指针是指针本身空间的大小。
+* `sizeof` 作用于数组，不会将数组转化为指针进行计算空间大小。
   
 #### 结构体、Union空间问题
 * 结构体排列的变量大小有自动对齐排列的功能。每个字符加入去占有空间时，看上一个字符占用内存未知，再填充对齐到自己需要的位置。最后大小也要对齐到所包含变量类型最大长度的整数倍。
@@ -190,10 +192,119 @@ int main()
 * 不可传递，单向性
 * 友元声明的形式和数量不受限制
 
-
 #### typename关键字
 
 #### 构造函数和析构函数相关
 * 构造函数不能直接使用例如类 A 的对象指针 a `A *a;`，调用 `a->A::A()` 在 GNUC 中无法调用。
-* 作为替代可以调用 `new (p) A()`，其中 p 是一个分配好地址的指针 p。
+* 作为替代可以调用 `new (p) A()`，其中 p 是一个分配好地址的指针 p。 定位 `new`。
 * 如果析构函数没有意义，并且数组 `a` 的每个元素是数据类型，不具有指针类型，`delete a` 和 `delete[] a` 是没有区别的。
+
+## using 
+* `using namespace_name::name` 引入命名空间内的一个成员。
+* `using namespace namespace_name` 引入整个命名空间
+
+## enum 枚举类型
+* `enum color1` 不限定作用域的枚举类型
+* `enum class color2` 限定作用域的枚举类型。
+
+```cpp
+enum Color{red1, green1, blue1};
+
+enum class Color1
+{
+    red,
+    green,
+    blue,
+};
+
+// 不限定作用域
+Color c = red1;
+// 限定作用域 Color1:: 是必须的
+Color1 cc = Color1::red;
+```
+
+## decltype
+// TODO 没懂
+
+## 左值引用和右值引用
+* 右值引用：不可复制，实现转移语义 Move sementics 和精确传递 Perfect Forwarding。
+  * 消除对象交互不必要的对象拷贝，节省资源，提高效率。
+  * 简洁明确定义泛型函数。
+
+## 宏
+* 宏定义类似于函数的实现，括号内的内容进行一一替换。没有类型检查。
+
+## 成员初始化列表
+* 好处：
+  * 高效
+  * 有些场合必须初始化：
+    * 常量成员
+    * 引用类型
+    * 没有默认构造函数的类的对象
+* initializer_list 列表初始化。可用于列表初始化一个对象，如下几种典型用法。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <initializer_list>
+ 
+template <class T>
+struct S {
+    std::vector<T> v;
+    S(std::initializer_list<T> l) : v(l) {
+         std::cout << "constructed with a " << l.size() << "-element list\n";
+    }
+    void append(std::initializer_list<T> l) {
+        v.insert(v.end(), l.begin(), l.end());
+    }
+    std::pair<const T*, std::size_t> c_arr() const {
+        return {&v[0], v.size()};  // 在 return 语句中复制列表初始化
+                                   // 这不使用 std::initializer_list
+    }
+};
+ 
+template <typename T>
+void templated_fn(T) {}
+ 
+int main()
+{
+    S<int> s = {1, 2, 3, 4, 5}; // 复制初始化
+    s.append({6, 7, 8});      // 函数调用中的列表初始化
+ 
+    std::cout << "The vector size is now " << s.c_arr().second << " ints:\n";
+ 
+    for (auto n : s.v)
+        std::cout << n << ' ';
+    std::cout << '\n';
+ 
+    std::cout << "Range-for over brace-init-list: \n";
+ 
+    for (int x : {-1, -2, -3}) // auto 的规则令此带范围 for 工作
+        std::cout << x << ' ';
+    std::cout << '\n';
+ 
+    auto al = {10, 11, 12};   // auto 的特殊规则
+ 
+    std::cout << "The list bound to auto has size() = " << al.size() << '\n';
+ 
+//!    templated_fn({1, 2, 3}); // 编译错误！“ {1, 2, 3} ”不是表达式，
+                             // 它无类型，故 T 无法推导
+    templated_fn<std::initializer_list<int>>({1, 2, 3}); // OK
+    templated_fn<std::vector<int>>({1, 2, 3});           // 也 OK
+}
+```
+
+## 运行时多态
+* 当类具有虚函数时，其则具有虚函数表指针，占用相应字节。
+* 运行时多态通过虚函数实现。
+
+## 虚析构函数
+* 为了解决基类指针指向派生类对象，用基类指针删除派生类对象。
+
+## 纯虚函数
+* `virtual int A() = 0;` 将成员函数 A 声明成纯虚函数。
+* 纯虚函数仅是一个接口，实现要在子类完成，并且含有纯虚函数的类称为抽象类，不能实例化成对象。
+
+## 虚函数指针
+* 虚函数指针：在含有虚函数的类的对象中，指向虚函数表，在运行时确定。
+* 虚函数表：在程序的只读数据段 (.rodata section)，存放虚函数指针，如果派生类实现了基类的某个虚函数，则在虚表中覆盖原来基类的那个虚函数指针，在编译时根据类的声明创建。
