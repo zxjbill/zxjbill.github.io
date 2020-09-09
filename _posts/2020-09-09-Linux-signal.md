@@ -1,9 +1,9 @@
 ---
 layout: post
 title:  "Linux 服务器信号系统"
-date:   2020-09-07 20:39:00
+date:   2020-09-09 20:39:00
 categories: Linux
-tags: CS:APP 网络编程
+tags: 信号通信
 mathjax: true
 mermaid: false
 excerpt_separator: <!--more-->
@@ -90,7 +90,11 @@ _sighandler_t signal (int sig, _sighandler_t _handler);
 * 更健壮的信号处理函数设置接口 `sigaction`
 * `sig` 信号类型，`act` 信号的处理方式，`oact` 信号之前的处理方式。
 * `sigaction` 成功返回 0，失败返回 -1。
-* ``
+* `struct sigaction` 结构体中 `sa_hander` 指定信号处理函数，`sa_mask` 成员设置进程的信号掩码，在原有掩码基础上增加掩码，指定某些信号不能发送给本进程。`sa_flags` 设置程序收到信号时的行为。
+* `sa_flags` 中 
+  * `SA_SIGINFO` 使用 `sa_sigaction` 作为信号处理函数，而不是默认的 `sa_handler`，给进程提供更多信息。 
+  * `SA_NOCLDSTOP` 如果 `sig = SIGCHLD`，则设置该标志表示子进程暂停时不产生 `SIGCHLD` 信号
+  * `SA_NOCLDWAIT` 如果 `sig = SIGCHLD`，则设置该标志表示子进程结束时不产生僵尸进程
 
 ```cpp
 #include <signal.h>
@@ -113,4 +117,49 @@ struct sigaction{
 }
 
 int sigaction(int sig, const struct sigaction* act, struct sigaction* oact);
+```
+
+## 信号集
+### 信号集函数
+* Linux 中数据结构 `sigset_t` 来表示信号。
+
+```cpp
+#include <bits/sigset.h>
+#define _SIGSET_NWORDS (1024 / (8 * sizeof(unsigned long int)))
+typedef struct{
+  unsigned long int __val[_SIGSET_NWORDS];
+} __sigset_t;
+
+#include <signal.h>
+int sigemptyset(sigset_t*_set);                   // 清空信号集
+int sigfillset(sigset_t* _set);                   // 在信号集中设置所有信号
+int sigaddset(sigset_t* _set, int _signo);        // 将信号 _signo 添加到信号集中
+int sigdelete(sigset_t* _set, int _signo);        // 将信号 _signo 从信号集中删除
+int sigismember(const sigset_t* _set, int _signo) // 判断 _signo 是否在信号集中
+```
+
+### 信号掩码
+* `sigaction` 中的 `sa_mask` 对成员设置进程的信号掩码。
+* 可利用函数 `sigpromask` 来查看和设置进程的信号掩码。
+* `_how` 指定掩码设置方式
+  * `SIG_BLOCK` 设置为当前值和 `_set` 指定信号集的并集
+  * `SIG_UNBLOCK` 设置为当前值和 `~_set` 指定信号集的交集
+  * `SIG_SETMASK` 直接将进程信号掩码设置为 `_set`
+* 特例：如果 `_set == NULL`，则掩码不变，但使用 `_oset` 参数获得当前的信号掩码。
+* 成功返回 0，失败返回 -1 并设置 errno。
+
+```cpp
+#include <signal.h>
+int sigpromask(int _how, const sigset_t* _set, sigset_t* _oset);
+```
+
+### 被挂起的信号
+* 设置信号掩码后，被屏蔽的信号将不能被进程所接受，此时收到的被屏蔽的信号则作为进程一个被挂起的信号。
+* 当取消对被挂起信号的屏蔽，则它能立即被进程接受。
+* 可利用 `sigpending` 获得被挂起的信号集。用 `set` 进行存储被挂起的信号集，多个相同的被挂起的信号，只能被反映一次，所以使用 `sigprocmask` 使得被挂起信号变成可执行时，该信号的处理函数也只能被触发一次。
+* `sigpending` 成功返回 0，失败返回 -1 并设置 errno。
+
+```cpp
+#include <signal.h>
+int sigpending(sigset_t* set);
 ```
