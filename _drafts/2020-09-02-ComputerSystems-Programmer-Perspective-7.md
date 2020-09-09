@@ -250,8 +250,12 @@ int main(int argc, char ** argv){
 ## 读取文件元数据
 * 通过 stat 和 fstat 检索文件的信息（也称为文件的元数据）。
 * Linux 在 `sys/stat.h` 中定义了宏谓词来确定 st_mode 成员类型：`S_ISREG(m)`、`S_ISDIR(m)` 和 `S_ISSOCK(m)`，分别判断是否是一个普通文件、目录文件、网络套接字。
+* 上述韩范
 
 ```cpp
+
+
+0
 #include <unistd.h>
 #include <sys/stat.h>
 
