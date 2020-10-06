@@ -97,7 +97,7 @@ ssize_t write(int fd, const void *buf, size_t n);
 ssize_t rio_readn(int fd, void *usrbuf, size_t n);
 ssize_t rio_writen(int fd, void *usrbuf, size_t n);
 
-ssize_t rio_read(int fd, void *usrbuf, size_t n){
+ssize_t rio_readn(int fd, void *usrbuf, size_t n){
   size_t nleft = n;
   ssize_t nread;
   char *bufp = usrbuf;

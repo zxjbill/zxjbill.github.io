@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Linux 服务器信号系统"
+title:  "Linux 信号系统"
 date:   2020-09-09 20:39:00
 categories: Linux
 tags: 信号通信

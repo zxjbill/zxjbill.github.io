@@ -10,8 +10,9 @@ title: Jason Zhou的Coding之路
 brief-intro: 凡是过往皆为序章
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://zxjbill.github.io" # the base hostname & protocol for your site
+# url: "219.228.104.129" # the base hostname & protocol for your site
 
-permalink: /:year/:month/:day/:title/
+#permalink: /:year/:month/:day/:title/
 
 # other links
 twitter_username: zxjbill
@@ -56,5 +57,11 @@ tag_dir: tag/
 excerpt_separator: "\n\n\n\n"
 
 # paginate
-gems: 
+# gems: 
+#   - jekyll-paginate
+
+plugins: 
+  - jekyll-paginate
+
 paginate: 6
+paginate_path: /page:num

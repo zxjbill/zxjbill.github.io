@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  "Union Find 查并集"
-date:   2020-08-01 15:34:00
-categories: 算法
+date:   2020-08-31 15:34:00
+categories: Data-Structure-and-Algorithm
 tags: 算法 Union Find
 mathjax: true
 mermaid: false
