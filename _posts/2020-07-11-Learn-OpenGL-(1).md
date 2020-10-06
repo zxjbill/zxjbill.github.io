@@ -3,7 +3,7 @@ layout: post
 title:  "OpenGL学习笔记一 安装配置"
 date:   2020-07-11 06:00:00
 categories: OpenGL
-tags: OpenGL, C++
+tags: OpenGL C++
 excerpt_separator: <!--more-->
 ---
 

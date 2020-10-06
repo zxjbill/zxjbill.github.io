@@ -3,7 +3,7 @@ layout: post
 title:  "Union Find 查并集"
 date:   2020-08-31 15:34:00
 categories: Data-Structure-and-Algorithm
-tags: 算法 Union Find
+tags: 算法 Union-Find
 mathjax: true
 mermaid: false
 excerpt_separator: <!--more-->

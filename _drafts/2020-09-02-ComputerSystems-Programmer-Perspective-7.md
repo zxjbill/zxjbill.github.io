@@ -3,7 +3,7 @@ layout: post
 title:  "深入理解计算机系统学习笔记七"
 date:   2020-09-02 08:32:00
 categories: 操作系统
-tags: CS:APP 链接
+tags: CS:APP IO
 mathjax: true
 mermaid: false
 excerpt_separator: <!--more-->
