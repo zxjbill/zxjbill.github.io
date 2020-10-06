@@ -81,7 +81,7 @@ excerpt_separator: <!--more-->
 * 块表：具有并行查找能力的高速缓冲寄存器，又称为“联想寄存器”。存放当前访问过的哪些页表项。
 
 <figure align="center">
-  <img src = "/media/image/Operating Systems/address-mapping.png" style="width:70%" />
+  <img src = "/media/image/Operating-Systems/address-mapping.png" style="width:70%" />
 </figure>
 
 ### 两级和多级页表

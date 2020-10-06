@@ -154,7 +154,7 @@ excerpt_separator: <!--more-->
   * 当前状态 S 为死锁等价于当且仅当 S 状态的资源分配图是不可完全简化的。
 
 <figure align="center">
-  <img src = "/media/image/Operating Systems/Task-ResourceAssignmentGraph.png" style="width:50%" />
+  <img src = "/media/image/Operating-Systems/Task-ResourceAssignmentGraph.png" style="width:50%" />
 </figure>
 
 ### 死锁的解除

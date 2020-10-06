@@ -33,7 +33,7 @@ excerpt_separator: <!--more-->
   * 创建和终止状态：创建：创建 PCB，并把进程转入就绪状态插入队列（在未获得必须资源未进入队列时则时创建状态）。终止：等待操作系统善后，PCB 清零空间回收（处在终止状态的进程的信息仍然可被收集）。
 
 <figure align="center">
-  <img src = "/media/image/Operating Systems/ProcessStateChanged.png" style="width:70%" />
+  <img src = "/media/image/Operating-Systems/ProcessStateChanged.png" style="width:70%" />
 </figure>
 
 ### 进程控制块
