@@ -44,8 +44,6 @@ excerpt_separator: <!--more-->
         |- App.cpp                  # main()
 ```
 
-其中在 CMakeLists.txt 中间中要定义 front source 和 tsl 的文件夹位置变量 FRONT_PATH 和 CERT_PEM_PATH、CERT_CRT_PATH。
-
 具体代码整理后放到 github 仓库中。
 
 ## 注意点
@@ -53,3 +51,4 @@ excerpt_separator: <!--more-->
 * Endpoint 的路径设置和前端文件路径是相关的，可以通过大括号 `{}` 进行路径匹配。
 * url 中如果有 Unicode 会被浏览器映射为 UTF-8 编码(至少 Chrome 会)，因此进入到 Endpoint 处理时需要处理去掉 `%`，并且将字符串表示的十六进制数转换成 `char` 进行解码得到正确的 Unicode 字符串。
 * 可将被访问过的文件保存到静态变量中，避免每次读取。但是这也要注意映射关系 `unordered_map<oatpp::String, oatpp::String>` 的处理, 其中 `oatpp::String` 定义了 `hash` 可以作为键值。
+* 其中在 CMakeLists.txt 中间中要定义 front source 和 tsl 的文件夹位置变量 FRONT_PATH 和 CERT_PEM_PATH、CERT_CRT_PATH。
