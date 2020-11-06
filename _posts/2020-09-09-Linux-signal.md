@@ -79,7 +79,7 @@ _sighandler_t signal(int signum, _sighandler_t handler));
 ### signal 系统调用
 * 使用 `signal` 为信号设置处理函数
 * `sig` 信号类型，`_handler` 函数指针，用于处理该类型信号的函数指针。
-* 调用成功则返回函数指针 `_handler`，失败时返回 `SIG_ERR`，并设置 errno。
+* 调用成功则返回前一次设置的函数指针 `_handler` 或默认处理函数指针 SIG_DEF，失败时返回 `SIG_ERR`，并设置 errno。
 
 ```cpp
 #include <signal.h>
